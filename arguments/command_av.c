@@ -21,6 +21,7 @@ int main()
       free(buffer);
       exit(1);
     }
+  
   while (1)
     {
       printf("$ ");
