@@ -23,7 +23,9 @@ int main()
     {
       printf("$ ");
       characters = getline(&buffer, &buffsize, stdin);
-      printf("%s\n", buffer);
+      printf("%s", buffer);
+      printf("buffer size: %zu\n", characters);
+      printf("Ctrl + C or Ctrl + D to Exit\n");
     }
   free(buffer);
   return (0);
