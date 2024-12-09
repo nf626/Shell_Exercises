@@ -3,7 +3,8 @@
 #include <string.h>
 
 /**
- * main - function that splits a string and returns an array of each word of the string.
+ * main - function that splits a string and returns
+ *        an array of each word of the string.
  *
  * Return: 0, Success.
  */
@@ -14,7 +15,7 @@ int main()
   size_t characters;
   char *token;
 
-  buffer = malloc(sizeof(buffsize) * sizeof(char));
+  buffer = malloc(sizeof(buffsize) * sizeof(char *));
   if (buffer == NULL)
     {
       free(buffer);
@@ -26,6 +27,7 @@ int main()
       printf("$ ");
       characters = getline(&buffer, &buffsize, stdin);
       printf("%s\n", buffer);
+      printf("Buffer size: %zu\n", characters);
       
       token = strtok(buffer, " ");
       while (token != NULL)
@@ -33,7 +35,7 @@ int main()
 	  printf("buffer string token: %s\n", token);
 	  token = strtok(NULL, " ");
 	}
-       printf("Ctrl + C or Ctrl + D to Exit\n");
+       printf("Ctrl + C to Exit\n");
     }
   free(buffer);
   return (0);

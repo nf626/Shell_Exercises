@@ -12,7 +12,7 @@ int main()
   size_t buffsize = 64;
   size_t characters;
 
-  buffer = malloc(sizeof(buffsize) * sizeof(char));
+  buffer = malloc(sizeof(buffsize) * sizeof(char *));
   if (buffer == NULL)
     {
       free(buffer);
@@ -25,7 +25,7 @@ int main()
       characters = getline(&buffer, &buffsize, stdin);
       printf("%s", buffer);
       printf("buffer size: %zu\n", characters);
-      printf("Ctrl + C or Ctrl + D to Exit\n");
+      printf("Ctrl + C to Exit\n");
     }
   free(buffer);
   return (0);
