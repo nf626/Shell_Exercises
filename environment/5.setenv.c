@@ -16,5 +16,11 @@ int _setenv(const char *name, const char *value, int overwrite)
 
 int main()
 {
+  char *env_var = getenv("TEST");
+
+  setenv("TEST", "Changed", 1);
+
+  char *new = getenv("TEST");
+  printf("%s\n", new);
   return (0);
 }
