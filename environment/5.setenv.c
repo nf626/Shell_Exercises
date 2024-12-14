@@ -11,8 +11,8 @@
  */
 int _setenv(const char *name, const char *value, int overwrite)
 {
-  char *new_env;
-  char **copy_env = environ;
+  char *current_env;
+  char **copy_env = environ, **new_env;
   size_t i, j;
  /** Make new environment variable with format NANME=Value */
   size_t name_length = strlen(name), value_length = strlen(value);
@@ -24,15 +24,40 @@ int _setenv(const char *name, const char *value, int overwrite)
       return (-1);
     }
 
-  new_env = malloc(env_length);
-  if (new_env == NULL)
+  current_env = malloc(env_length);
+  if (current_env == NULL)
     {
-      free(new_env);
+      free(current_env);
       return (-1);
     }
+
   
   while ((*copy_env) != NULL)
     {
-      if (strcmp()
+      if ((strncmp((*copy_env), name, name_length) == 0) && ((*copy_env)[name_length] == '='))
+	{
+	  if (overwrite)
+	    {
+	      (*copy_env) = current_env;
+	      return (0);
+	    }
+	  else
+	    {
+	      free(current_env);
+	      return (0);
+	    }
+	}
+      copy_env++;
     }
+  new_env = realloc(environ, (sizeof(environ) / sizeof(char *) + 1) * sizeof(char *));
+  if (new_env == NULL)
+    {
+      free(current_env);
+      return (-1);
+    }
+
+  new_env[sizeof(environ) / sizeof(char *)] = current_env;
+  environ = new_env;
+  
+  return (0);
 }
