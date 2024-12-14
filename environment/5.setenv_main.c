@@ -8,12 +8,13 @@
  */
 int main()
 {
-  char newvar[] = "language";
-  char value[] = "C";
+  char *env = _getenv("TEST");
+  char *new_env;
+
+  _setenv("TEST", "Changed", 1);
+  new_env = _getenv("TEST");
   
-  _setenv(newvar, value, 1);
-  
-  printf("Result: %s\n", getenv(newvar));
+  printf("Result: %s\n", new_env);
   
   return (0);
 }

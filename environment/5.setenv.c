@@ -1,5 +1,38 @@
 #include "environ.h"
 
+size_t **double_count(char **strings)
+{
+    size_t words, i, **array, letters;
+
+    words = letters = 0;
+    /* counting words in array */
+    for (i = 0; strings[i]; i++)
+        words++;
+
+    /* storing word count in array */
+    array = malloc(sizeof(size_t *) * 2);
+    if (!array)
+        return (NULL);
+
+    array[0] = malloc(sizeof(size_t));
+    if (!array[0])
+        return (NULL);
+    array[0] = &words;
+
+    /* counting the number of letters in each word */
+    array[1] = malloc(sizeof(size_t) * words);
+    if (!array[1])
+        return (NULL);
+
+    for (i = 0; i < words; i++)
+    {
+        letters = strlen(strings[i]);
+        array[1][i] = letters;
+    }
+
+    return (array);
+}
+
 /**
  * _setenv - changes or adds an environment variable
  *           (without using setenv).
@@ -11,53 +44,80 @@
  */
 int _setenv(const char *name, const char *value, int overwrite)
 {
-  char *current_env;
-  char **copy_env = environ, **new_env;
-  size_t i, j;
- /** Make new environment variable with format NANME=Value */
-  size_t name_length = strlen(name), value_length = strlen(value);
-  size_t env_length = name_length + value_length + 2;
+extern char **environ;
+    char **temp_env, *variable, *n, *v, *new_path;
+    size_t i, j, l1, l2, words, **count;
 
-  if (name == NULL || value == NULL)
+    l1 = strlen(name);
+    l2 = strlen(value);
+    v = strdup(value);
+    n = strdup(name);
+    variable = _getenv(name);
+
+    /** checking for errors */
+    if (!name || !l1 || strchr(name, '='))
+    {
+        perror("Error:");
+        return (-1);
+    }
+
+    /** creating new string */
+    new_path = malloc(sizeof(char) * (l1 + l2 + 2));
+    if (!new_path)
     {
       perror("Error:");
-      return (-1);
+        return (-1);
     }
 
-  current_env = malloc(env_length);
-  if (current_env == NULL)
+    for (i = 0; i < l1; i++)
     {
-      free(current_env);
-      return (-1);
+        new_path[i] = n[i];
+    }
+    new_path[i++] = '=';
+    for (j = 0; j < l2; j++)
+    {
+        new_path[i++] = v[j];
+    }
+    new_path[i] = 0;
+
+    /** copying strings to a new space */
+    count = double_count(environ);
+    words = **count;
+    temp_env = malloc(sizeof(char *) * (words + 1));
+    if (!temp_env)
+    {
+        perror("Error:");
+        return (-1);
     }
 
-  
-  while ((*copy_env) != NULL)
+    for (i = 0; i < words; i++)
     {
-      if ((strncmp((*copy_env), name, name_length) == 0) && ((*copy_env)[name_length] == '='))
-	{
-	  if (overwrite)
-	    {
-	      (*copy_env) = current_env;
-	      return (0);
-	    }
-	  else
-	    {
-	      free(current_env);
-	      return (0);
-	    }
-	}
-      copy_env++;
-    }
-  new_env = realloc(environ, (sizeof(environ) / sizeof(char *) + 1) * sizeof(char *));
-  if (new_env == NULL)
-    {
-      free(current_env);
-      return (-1);
+        temp_env[i] = environ[i];
     }
 
-  new_env[sizeof(environ) / sizeof(char *)] = current_env;
-  environ = new_env;
-  
-  return (0);
+    /** if variable doesn't exist */
+    if (!variable)
+    {
+        temp_env[words] = new_path;
+        printf("temp_env[%ld]: %s\n", i, temp_env[i]);
+        environ = temp_env;
+        variable = new_path;
+        printf("_getenv(%s): %s\n", name, _getenv(name));
+        return (0);
+    }
+
+    /** if variable does exist */
+    else
+    {
+      /** if overwrite is nonzero, change value */
+        if (overwrite)
+        {
+            variable = new_path;
+            return (0);
+        }
+        else
+            return (0);
+    }
+
+    return (-1);
 }
