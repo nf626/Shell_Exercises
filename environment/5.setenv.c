@@ -5,9 +5,9 @@ extern char **environ;
 /**
  * _setenv - changes or adds an environment variable
  *           (without using setenv).
- * @name: adds the variable name to the environment.
- * @value:
- * @overwrite:
+ * @name: variable name to the environment.
+ * @value: variable value to name.
+ * @overwrite: zero or not zero.
  *
  * Return: zero on success, or -1 on error.
  */
