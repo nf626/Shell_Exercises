@@ -1,3 +1,4 @@
+#include "environ.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,18 +30,4 @@ char *_getenv(const char *name)
       i++;
     }
   return (NULL);
-}
-
-/**
- * main - Prints out environment list.
- *
- * Return: 0, Success.
- */
-void main()
-{
-  char *name;
-
-  name = _getenv("PATH");
-  
-  printf("Environment: %s\n", name);
 }

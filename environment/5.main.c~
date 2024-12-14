@@ -1,0 +1,15 @@
+#include "environ.h"
+
+/**
+ * main - Prints out set environment variables.
+ *
+ * Return: 0, Success.
+ */
+int main()
+{
+  char *env = getenv("TEST");
+  setenv("TEST", "Change", 0);
+
+  printf("Set environment: %s\n", env);
+  return (0);
+}

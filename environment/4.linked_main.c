@@ -1,12 +1,17 @@
 #include "environ.h"
 
+/**
+ * main - function that builds a linked list of the PATH directories.
+ *
+ * Return: 0, Success.
+ */
 int main()
 {
   unsigned int i = 0;
   char *pathname, *token;
   path_t *head = NULL;
   
-  pathname = getenv("PATH");
+  pathname = getenv("HOME");
   token = strtok(pathname, ":");
  
   while (token != NULL)
