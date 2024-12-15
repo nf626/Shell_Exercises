@@ -1,38 +1,5 @@
 #include "environ.h"
 
-size_t **double_count(char **strings)
-{
-    size_t words, i, **array, letters;
-
-    words = letters = 0;
-    /* counting words in array */
-    for (i = 0; strings[i]; i++)
-        words++;
-
-    /* storing word count in array */
-    array = malloc(sizeof(size_t *) * 2);
-    if (!array)
-        return (NULL);
-
-    array[0] = malloc(sizeof(size_t));
-    if (!array[0])
-        return (NULL);
-    array[0] = &words;
-
-    /* counting the number of letters in each word */
-    array[1] = malloc(sizeof(size_t) * words);
-    if (!array[1])
-        return (NULL);
-
-    for (i = 0; i < words; i++)
-    {
-        letters = strlen(strings[i]);
-        array[1][i] = letters;
-    }
-
-    return (array);
-}
-
 /**
  * _setenv - changes or adds an environment variable
  *           (without using setenv).
