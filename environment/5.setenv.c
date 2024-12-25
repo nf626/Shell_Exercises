@@ -1,5 +1,11 @@
-#include "environ.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
 
+extern char **environ;
 /**
  * _setenv - changes or adds an environment variable
  *           (without using setenv).
@@ -11,80 +17,107 @@
  */
 int _setenv(const char *name, const char *value, int overwrite)
 {
-extern char **environ;
-    char **temp_env, *variable, *n, *v, *new_path;
-    size_t i, j, l1, l2, words, **count;
+}
 
-    l1 = strlen(name);
-    l2 = strlen(value);
-    v = strdup(value);
-    n = strdup(name);
-    variable = _getenv(name);
+char *_getenv(char *env_var)
+{
+  int i = 0;
+  char *name;
 
-    /** checking for errors */
-    if (!name || !l1 || strchr(name, '='))
+  while (environ[i] != NULL)
     {
-        perror("Error:");
-        return (-1);
+      name = strtok(environ[i], "=");
+      if(strcmp(env_var, name) == 0)
+	{
+	  name = strtok(NULL, "\n");
+	  return (name);
+	}
+      i = i + 1;
     }
+  return (NULL);
+}
 
-    /** creating new string */
-    new_path = malloc(sizeof(char) * (l1 + l2 + 2));
-    if (!new_path)
-    {
-      perror("Error:");
-        return (-1);
-    }
+char *get_command(char *command)
+{
+  char *path, *token, *cmd;
+  struct stat st;
 
-    for (i = 0; i < l1; i++)
+  path = _getenv("PATH");
+  token = strtok(path, ":");
+  while (token != NULL)
     {
-        new_path[i] = n[i];
+      cmd = malloc(strlen(token) + strlen(cmd) + 2);
+      strcpy(cmd, token);
+      strcat(cmd, "/");
+      strcat(cmd, command);
+      if (stat(cmd, &st) == 0)
+	{
+	  return (cmd);
+	}
+      free(cmd);
+      token = strtok(NULL, ":");
     }
-    new_path[i++] = '=';
-    for (j = 0; j < l2; j++)
-    {
-        new_path[i++] = v[j];
-    }
-    new_path[i] = 0;
+  return (NULL);
+}
 
-    /** copying strings to a new space */
-    count = double_count(environ);
-    words = **count;
-    temp_env = malloc(sizeof(char *) * (words + 1));
-    if (!temp_env)
-    {
-        perror("Error:");
-        return (-1);
-    }
+char **split_string(char * buffer, char *del)
+{
+  char **tokens;
+  char *token;
+  int i = 0;
 
-    for (i = 0; i < words; i++)
+  tokens = malloc(sizeof(char *) * 1024);
+  token = strtok(buffer, del);
+  while (token != NULL)
     {
-        temp_env[i] = environ[i];
+      tokens[i] = token;
+      token = strtok(NULL, del);
+      i = i + 1;
     }
+  tokens[i] = NULL;
+  return (tokens);
+}
 
-    /** if variable doesn't exist */
-    if (!variable)
+int main(int argc, char **argv, char **env)
+{
+  char *buffer = NULL, *cmd;
+  size_t buffer_size = 0;
+  char **args;
+  pid_t pid;
+  int status, n_chars;
+  
+  while (1)
     {
-        temp_env[words] = new_path;
-        printf("temp_env[%ld]: %s\n", i, temp_env[i]);
-        environ = temp_env;
-        variable = new_path;
-        printf("_getenv(%s): %s\n", name, _getenv(name));
-        return (0);
+      printf("#cisfun$ ");
+      n_chars = getline(&buffer, &buffer_size, stdin);
+      if (n_chars == -1)
+	{
+	  perror("Error:");
+	  exit(2);
+	}
+      args = split_string(buffer, " \t\n");
+      if (strcmp(args[0], "exit") == 0)
+	{
+	  exit(0);
+	}
+      pid = fork();
+      if (pid == 0)
+	{
+	  cmd = get_command(args[0]);
+	  if (cmd)
+	    {
+	      execve(cmd, args, env);
+	    }
+	  else
+	    {
+	      printf("Command not found\n");
+	    }
+	  exit(0);
+	}
+      else
+	{
+	  wait(&status);
+	}
     }
-
-    /** if variable does exist */
-    else
-    {
-      /** if overwrite is nonzero, change value */
-        if (overwrite)
-        {
-            variable = new_path;
-            return (0);
-        }
-        else
-            return (0);
-    }
-
-    return (-1);
+  return (0);
 }
