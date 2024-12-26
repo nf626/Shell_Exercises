@@ -17,6 +17,39 @@ extern char **environ;
  */
 int _setenv(const char *name, const char *value, int overwrite)
 {
+  int i = 0, len = 0;
+  char *new_var;
+
+  if (name == NULL || value == NULL)
+    {
+      return (-1);
+    }
+  while (environ[i] != NULL)
+    {
+      len = strlen(name);
+      if (strncmp(environ[i], name, len) == 0)
+	{
+	  /** If name does exist in the environment, then its value is changed to value */
+	  if (overwrite != 0)
+	    {
+	      new_var = malloc(sizeof(char *) * 1024);
+	      strcpy(new_var, name);
+	      strcat(new_var, "=");
+	      strcat(new_var, value);
+	      environ[i] = new_var;
+	      return (0);
+	    }
+	  return (0);
+	}
+      i = i + 1;
+    }
+  new_var = malloc(sizeof(char *) * 1024);
+  strcpy(new_var, name);
+  strcat(new_var, "=");
+  strcat(new_var, value);
+  environ[i] = new_var;
+  environ[i + 1] = NULL;
+  return (0);
 }
 
 char *_getenv(char *env_var)
@@ -46,7 +79,7 @@ char *get_command(char *command)
   token = strtok(path, ":");
   while (token != NULL)
     {
-      cmd = malloc(strlen(token) + strlen(cmd) + 2);
+      cmd = malloc(sizeof(char *) * 1024);
       strcpy(cmd, token);
       strcat(cmd, "/");
       strcat(cmd, command);
