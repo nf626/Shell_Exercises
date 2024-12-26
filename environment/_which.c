@@ -9,7 +9,7 @@
  * @filename: filename to check.
  *
  */
-void find_path(char *filename)
+void _which(char *filename)
 {
   if (access(filename, F_OK) == 0)
     {
@@ -41,7 +41,7 @@ int main(void)
 	  token = strtok(NULL, " \t\n");
 	  while (token)
 	    {
-	      find_path(token);
+	      _which(token);
 	      token = strtok(NULL, " \t\n");
 	    }
 	}
